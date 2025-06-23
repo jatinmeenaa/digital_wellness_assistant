@@ -17,20 +17,22 @@ def list_running_apps():
             continue
 
 def track_app(app_name):
-    print(f" Waiting for '{app_name}' to start...")
 
-    start_time = None
+    print(f"Tracking '{app_name}'...")
 
-    # Step 1: Wait for app to start
-    while True:
-        for proc in psutil.process_iter(['name']):
-            if proc.info['name'] == app_name:
-                start_time = datetime.now()
-                print(f"'{app_name}' started at {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-                break
-        if start_time:
+    # Check if app is running right now
+    app_running = False
+    for proc in psutil.process_iter(['name']):
+        if proc.info['name'] == app_name:
+            app_running = True
             break
-        time.sleep(1)
+
+    if not app_running:
+        print(f"'{app_name}' is not running anymore. Exiting tracking.")
+        return
+
+    start_time = datetime.now()
+    print(f"Started tracking at {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     # Step 2: Wait for app to close
     while True:
@@ -49,6 +51,12 @@ def track_app(app_name):
 
             break
         time.sleep(1)
+
+def is_app_running(app_name):
+    for proc in psutil.process_iter(['name']):
+        if proc.info['name'] == app_name:
+            return True
+    return False
 
 if __name__ == "__main__":
     list_running_apps()

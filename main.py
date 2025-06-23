@@ -1,4 +1,4 @@
-from tracker import track_app, list_running_apps
+from tracker import track_app, list_running_apps, is_app_running
 from db_ops import get_today_usage_summary
 from visualize import plot_today_usage_pie
 
@@ -20,7 +20,10 @@ def main():
 
         elif choice == '2':
             app_name = input("Enter the app name to track (e.g., chrome.exe): ").strip()
-            track_app(app_name)
+            if is_app_running(app_name):
+                track_app(app_name)
+            else:
+                print(f"'{app_name}' is not currently running. Please enter a valid app name.")
 
         elif choice == '3':
             summary = get_today_usage_summary()
