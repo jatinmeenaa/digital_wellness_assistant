@@ -1,6 +1,7 @@
 import psutil
 from datetime import datetime
 import time
+from db_ops import insert_usage_log
 
 def list_running_apps():
     print("{:<30} {:<10} {:<20}".format("App Name", "PID", "Start Time"))
@@ -43,6 +44,9 @@ def track_app(app_name):
             duration = (end_time - start_time).total_seconds()
             print(f" '{app_name}' closed at {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
             print(f" Total usage time: {int(duration)} seconds")
+            # Insert log into database
+            insert_usage_log(app_name, start_time, end_time, int(duration))
+
             break
         time.sleep(1)
 
