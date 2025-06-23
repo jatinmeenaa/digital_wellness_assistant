@@ -32,3 +32,30 @@ def insert_usage_log(app_name, start_time, end_time, duration_sec):
     finally:
         cursor.close()
         close_connection(conn)
+
+def get_today_usage_summary():
+    """
+    Fetch total usage time per app for today from the database.
+    Returns a list of (app_name, total_time_sec).
+    """
+    conn = get_connection()
+    if not conn:
+        print("Failed to connect to database.")
+        return []
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT app_name, SUM(duration_sec) AS total_time
+            FROM app_usage_logs
+            WHERE log_date = CURDATE()
+            GROUP BY app_name
+            ORDER BY total_time DESC;
+        """)
+        return cursor.fetchall()
+    except Exception as e:
+        print(f"Error fetching usage summary: {e}")
+        return []
+    finally:
+        cursor.close()
+        close_connection(conn)
